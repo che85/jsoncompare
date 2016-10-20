@@ -144,7 +144,8 @@ def _are_same(expected, actual, ignore_value_of_keys, ignore_missing_keys=False)
 
     return False, Stack().append(StackItem('Unhandled Type: {0}'.format(type(expected)), expected, actual))
 
-def are_same(original_a, original_b, ignore_list_order_recursively=False, ignore_value_of_keys=[]):
+def are_same(original_a, original_b, ignore_list_order_recursively=False, ignore_value_of_keys=None):
+    ignore_value_of_keys = ignore_value_of_keys if ignore_value_of_keys else []
     if ignore_list_order_recursively:
         a = _bottom_up_sort(original_a)
         b = _bottom_up_sort(original_b)
@@ -154,7 +155,9 @@ def are_same(original_a, original_b, ignore_list_order_recursively=False, ignore
     return _are_same(a, b, ignore_value_of_keys)
 
 
-def contains(expected_original, actual_original, ignore_list_order_recursively=False, ignore_value_of_keys=[]):
+def contains(expected_original, actual_original, ignore_list_order_recursively=False, ignore_value_of_keys=None):
+    ignore_value_of_keys = ignore_value_of_keys if ignore_value_of_keys else []
+
     if ignore_list_order_recursively:
         actual = _bottom_up_sort(actual_original)
         expected = _bottom_up_sort(expected_original)
@@ -163,6 +166,7 @@ def contains(expected_original, actual_original, ignore_list_order_recursively=F
         expected = expected_original
     return _are_same(expected, actual, ignore_value_of_keys, True)
 
-def json_are_same(a, b, ignore_list_order_recursively=False, ignore_value_of_keys=[]):
+def json_are_same(a, b, ignore_list_order_recursively=False, ignore_value_of_keys=None):
+    ignore_value_of_keys = ignore_value_of_keys if ignore_value_of_keys else []
     return are_same(json.loads(a), json.loads(b), ignore_list_order_recursively, ignore_value_of_keys)
 
