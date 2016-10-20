@@ -115,13 +115,11 @@ def _are_same(expected, actual, ignore_value_of_keys, ignore_missing_keys=False)
         return expected == actual, Stack()
 
     if not ignore_missing_keys and len(expected) > len(actual):
-        # TODO: you could also take ignore_value_of_keys into account
-        return False, \
-               Stack().append(
-                   StackItem('Length Mismatch: Expected Length: {0}, Actual Length: {1}'
-                                  .format(len(expected), len(actual)),
-                              expected,
-                              actual))
+        stack = Stack().append(StackItem('Length Mismatch: Expected Length: {0}, Actual Length: {1}'
+                                          .format(len(expected), len(actual)), expected, actual))
+        if isinstance(expected, dict):
+          stack.append('Missing keys: {0}'.format(get_missing_keys(expected, actual)))
+        return False, stack
 
     if isinstance(expected, dict):
         return _is_dict_same(expected, actual, ignore_value_of_keys)
@@ -130,6 +128,10 @@ def _are_same(expected, actual, ignore_value_of_keys, ignore_missing_keys=False)
         return _is_list_same(expected, actual, ignore_value_of_keys)
 
     return False, Stack().append(StackItem('Unhandled Type: {0}'.format(type(expected)), expected, actual))
+
+
+def get_missing_keys(expected, actual):
+    return [key for key in expected if key not in actual]
 
 
 def are_same(original_a, original_b, ignore_list_order_recursively=False, ignore_value_of_keys=None):
